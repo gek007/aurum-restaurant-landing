@@ -1359,6 +1359,200 @@
       background: linear-gradient(to left, var(--charcoal), transparent);
     }
 
+    .reel-item { cursor: zoom-in; }
+
+    /* ─── REEL LIGHTBOX ─── */
+    .reel-lb {
+      position: fixed;
+      inset: 0;
+      z-index: 300;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(10, 9, 7, 0.94);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.38s var(--ease-out);
+    }
+
+    .reel-lb.open {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .reel-lb-img {
+      max-width: min(88vw, 1100px);
+      max-height: 82vh;
+      width: auto;
+      height: auto;
+      object-fit: contain;
+      border-radius: 4px;
+      cursor: pointer;
+      transform: scale(0.9);
+      transition: transform 0.42s var(--ease-out);
+      box-shadow: 0 40px 100px rgba(0, 0, 0, 0.7);
+      display: block;
+    }
+
+    .reel-lb-img-b {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      border-radius: 4px;
+      display: none;
+      pointer-events: none;
+    }
+
+    .reel-lb-img-b.wave-in {
+      display: block;
+      animation: waveIn 0.88s var(--ease-out) forwards;
+    }
+
+    @keyframes waveIn {
+      0% {
+        clip-path: polygon(0 0, 0% 0%, 0% 25%, 0% 50%, 0% 75%, 0% 100%, 0 100%);
+      }
+      48% {
+        clip-path: polygon(0 0, 50% 0%, 65% 25%, 44% 50%, 65% 75%, 50% 100%, 0 100%);
+      }
+      100% {
+        clip-path: polygon(0 0, 100% 0%, 100% 25%, 100% 50%, 100% 75%, 100% 100%, 0 100%);
+      }
+    }
+
+    .reel-lb.open .reel-lb-img {
+      transform: scale(1);
+      animation: lbKenBurns 24s ease-in-out 0.5s infinite;
+    }
+
+    @keyframes lbKenBurns {
+      0%   { transform: scale(1.00) translate(  0%,    0%); }
+      28%  { transform: scale(1.06) translate(-1.4%,  0.7%); }
+      54%  { transform: scale(1.04) translate( 0.6%, -0.6%); }
+      78%  { transform: scale(1.07) translate( 1.2%,  1.0%); }
+      100% { transform: scale(1.00) translate(  0%,    0%); }
+    }
+
+    .reel-lb-caption {
+      position: absolute;
+      bottom: 2.5rem;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 0.68rem;
+      letter-spacing: 0.26em;
+      text-transform: uppercase;
+      color: var(--champagne-dim);
+      white-space: nowrap;
+      opacity: 0;
+      transition: opacity 0.38s var(--ease-out) 0.18s;
+    }
+
+    .reel-lb.open .reel-lb-caption { opacity: 1; }
+
+    .reel-lb-close {
+      position: absolute;
+      top: 1.5rem;
+      right: 1.75rem;
+      width: 44px;
+      height: 44px;
+      background: none;
+      border: 1px solid rgba(201, 168, 76, 0.28);
+      border-radius: 50%;
+      color: var(--champagne-dim);
+      font-size: 1rem;
+      line-height: 1;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: border-color var(--duration-fast), color var(--duration-fast);
+    }
+
+    .reel-lb-close:hover,
+    .reel-lb-close:focus-visible { border-color: var(--gold); color: var(--gold); outline: none; }
+
+    body.lb-open .reel-track { animation-play-state: paused; }
+
+    .reel-lb-inner {
+      position: relative;
+      display: inline-flex;
+      border-radius: 4px;
+      transform: perspective(1000px) rotateX(0deg) rotateY(0deg);
+      transition: transform 0.65s var(--ease-out);
+      cursor: pointer;
+    }
+
+    /* film grain overlay — cinematic texture */
+    .reel-lb-inner::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      z-index: 3;
+      border-radius: 4px;
+      pointer-events: none;
+      opacity: 0;
+      mix-blend-mode: overlay;
+      background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='g'><feTurbulence type='fractalNoise' baseFrequency='0.78' numOctaves='4' stitchTiles='stitch'/></filter><rect width='200' height='200' filter='url(%23g)' opacity='0.5'/></svg>");
+      background-repeat: repeat;
+      background-size: 200px 200px;
+      transition: opacity 0.7s var(--ease-out) 0.25s;
+    }
+
+    .reel-lb.open .reel-lb-inner::before { opacity: 0.1; }
+
+    /* golden glint sweep on open */
+    .reel-lb-inner::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: 4px;
+      pointer-events: none;
+      background: linear-gradient(
+        112deg,
+        transparent 20%,
+        rgba(201, 168, 76, 0.28) 48%,
+        rgba(255, 248, 220, 0.12) 51%,
+        transparent 78%
+      );
+      background-size: 280% 100%;
+      background-position: 160% 0;
+      opacity: 0;
+    }
+
+    .reel-lb.open .reel-lb-inner::after {
+      animation: lbGlint 1.5s var(--ease-out) 0.2s forwards;
+    }
+
+    @keyframes lbGlint {
+      0%   { opacity: 0; background-position: 160% 0; }
+      12%  { opacity: 1; }
+      88%  { opacity: 1; }
+      100% { opacity: 0; background-position: -60% 0; }
+    }
+
+    /* pulsing golden rim glow */
+    .reel-lb.open .reel-lb-inner {
+      animation: lbRimGlow 5s ease-in-out 0.7s infinite;
+    }
+
+    @keyframes lbRimGlow {
+      0%, 100% {
+        box-shadow:
+          0 0 0 1px rgba(201, 168, 76, 0.18),
+          0 0  28px rgba(201, 168, 76, 0.06);
+      }
+      50% {
+        box-shadow:
+          0 0 0 1px rgba(201, 168, 76, 0.52),
+          0 0  55px rgba(201, 168, 76, 0.18),
+          0 0 100px rgba(201, 168, 76, 0.07);
+      }
+    }
+
     /* ─── RESERVE ─── */
     #reserve {
       padding: 10rem 3.5rem;
@@ -2170,6 +2364,15 @@
     </ul>
   </footer>
 
+  <div class="reel-lb" id="reel-lb" role="dialog" aria-modal="true" aria-label="Room photo" aria-hidden="true">
+    <button class="reel-lb-close" id="reel-lb-close" aria-label="Close image">&#x2715;</button>
+    <div class="reel-lb-inner" id="reel-lb-inner">
+      <img class="reel-lb-img" id="reel-lb-img" src="" alt="" />
+      <img class="reel-lb-img-b" id="reel-lb-img-b" src="" alt="" />
+    </div>
+    <span class="reel-lb-caption" id="reel-lb-caption"></span>
+  </div>
+
   <script>
     const nav = document.getElementById('nav');
     const navToggle = document.getElementById('nav-toggle');
@@ -2497,6 +2700,123 @@
       const active = [...deckCards].findIndex(c => c.classList.contains('is-active'));
       layoutDeck(active >= 0 ? active : 0);
     }, { passive: true });
+
+    /* ─── Reel lightbox ─── */
+    const reelTrack = document.getElementById('reel-track');
+    const reelLb = document.getElementById('reel-lb');
+    const reelLbInner = document.getElementById('reel-lb-inner');
+    const reelLbImg = document.getElementById('reel-lb-img');
+    const reelLbImgB = document.getElementById('reel-lb-img-b');
+    const reelLbCaption = document.getElementById('reel-lb-caption');
+    const reelLbClose = document.getElementById('reel-lb-close');
+    const reelItems = [...reelTrack.querySelectorAll('.reel-item:not([aria-hidden])')];
+    let currentReelIdx = 0;
+    let reelLbLastFocus = null;
+    let waving = false;
+
+    function loadImg(item) {
+      const img = item.querySelector('img');
+      const source = item.querySelector('source[type="image/webp"]');
+      return {
+        src: source ? source.srcset : (img ? img.src : ''),
+        alt: img ? img.alt : '',
+        caption: item.querySelector('.reel-label')?.textContent || ''
+      };
+    }
+
+    function openReelLb(item) {
+      currentReelIdx = reelItems.indexOf(item);
+      if (currentReelIdx < 0) currentReelIdx = 0;
+      const { src, alt, caption } = loadImg(item);
+      reelLbImg.src = src;
+      reelLbImg.alt = alt;
+      reelLbCaption.textContent = caption;
+      reelLbLastFocus = document.activeElement;
+      reelLb.setAttribute('aria-hidden', 'false');
+      reelLb.classList.add('open');
+      document.body.classList.add('lb-open');
+      reelLbClose.focus();
+    }
+
+    function closeReelLb() {
+      if (waving) return;
+      reelLb.classList.remove('open');
+      document.body.classList.remove('lb-open');
+      reelLb.setAttribute('aria-hidden', 'true');
+      reelLbInner.style.transform = 'perspective(1000px) rotateX(0deg) rotateY(0deg)';
+      reelLbInner.style.transition = 'transform 0.65s var(--ease-out)';
+      reelLbLastFocus?.focus();
+    }
+
+    function waveToNext() {
+      if (waving) return;
+      waving = true;
+      const nextIdx = (currentReelIdx + 1) % reelItems.length;
+      const { src, alt, caption } = loadImg(reelItems[nextIdx]);
+
+      reelLbImgB.src = src;
+      reelLbImgB.alt = alt;
+      reelLbCaption.style.opacity = '0';
+      reelLbImgB.classList.add('wave-in');
+
+      setTimeout(() => {
+        reelLbImg.src = src;
+        reelLbImg.alt = alt;
+        reelLbCaption.textContent = caption;
+        reelLbCaption.style.opacity = '';
+        reelLbImgB.classList.remove('wave-in');
+        reelLbImgB.src = '';
+        currentReelIdx = nextIdx;
+        waving = false;
+      }, 920);
+    }
+
+    reelTrack.addEventListener('click', (e) => {
+      const item = e.target.closest('.reel-item');
+      if (item) openReelLb(item);
+    });
+
+    reelLbClose.addEventListener('click', closeReelLb);
+
+    reelLb.addEventListener('click', (e) => {
+      if (e.target === reelLb) {
+        closeReelLb();
+      } else if (e.target === reelLbImg || e.target === reelLbInner) {
+        waveToNext();
+      }
+    });
+
+    /* 3D tilt follows mouse while lightbox is open */
+    reelLb.addEventListener('mousemove', (e) => {
+      if (!reelLb.classList.contains('open') || prefersReducedMotion || waving) return;
+      const rect = reelLbInner.getBoundingClientRect();
+      const dx = (e.clientX - (rect.left + rect.width  / 2)) / (rect.width  / 2);
+      const dy = (e.clientY - (rect.top  + rect.height / 2)) / (rect.height / 2);
+      const rx = Math.max(-9, Math.min(9, -dy * 9));
+      const ry = Math.max(-9, Math.min(9,  dx * 9));
+      reelLbInner.style.transform = `perspective(1000px) rotateX(${rx}deg) rotateY(${ry}deg)`;
+      reelLbInner.style.transition = 'transform 0.08s linear';
+    });
+
+    reelLb.addEventListener('mouseleave', () => {
+      reelLbInner.style.transform = 'perspective(1000px) rotateX(0deg) rotateY(0deg)';
+      reelLbInner.style.transition = 'transform 0.65s var(--ease-out)';
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (!reelLb.classList.contains('open')) return;
+      if (e.key === 'Escape') closeReelLb();
+      if (e.key === 'ArrowRight' || e.key === 'ArrowDown') { e.preventDefault(); waveToNext(); }
+    });
+
+    /* Make real reel items keyboard-focusable */
+    reelItems.forEach(item => {
+      item.setAttribute('tabindex', '0');
+      item.setAttribute('role', 'button');
+      item.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openReelLb(item); }
+      });
+    });
   </script>
 </body>
 </html>
