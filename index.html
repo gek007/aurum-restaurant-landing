@@ -1288,20 +1288,21 @@
 
     .reel-track {
       display: flex;
+      align-items: center;
       width: max-content;
-      animation: reelScroll 40s linear infinite;
+      animation: reelScroll 36s linear infinite;
     }
 
-    .reel-track:hover { animation-play-state: paused; }
+    #reel:hover .reel-track { animation-play-state: paused; }
 
     @keyframes reelScroll {
-      0% { transform: translateX(0); }
+      0%   { transform: translateX(0); }
       100% { transform: translateX(-50%); }
     }
 
     .reel-item {
       position: relative;
-      width: clamp(260px, 28vw, 380px);
+      width: clamp(312px, 34vw, 456px);
       aspect-ratio: 16/10;
       flex-shrink: 0;
       overflow: hidden;
@@ -1312,21 +1313,26 @@
       width: 100%;
       height: 100%;
       object-fit: cover;
-      filter: saturate(0.85) brightness(0.75);
-      transition: filter 0.6s var(--ease-out), transform 0.8s var(--ease-out);
+      filter: saturate(0) brightness(0.6) contrast(1.1);
+      transition: filter 0.9s var(--ease-out), transform 0.9s var(--ease-out);
     }
 
     .reel-item:hover img {
-      filter: saturate(1) brightness(0.95);
-      transform: scale(1.05);
+      filter: saturate(1) brightness(1) contrast(1);
+      transform: scale(1.06);
     }
 
     .reel-item::after {
       content: '';
       position: absolute;
       inset: 0;
-      background: linear-gradient(to top, rgba(10, 9, 7, 0.7), transparent 50%);
+      background: linear-gradient(to top, rgba(10, 9, 7, 0.65), transparent 55%);
       pointer-events: none;
+      transition: opacity 0.9s var(--ease-out);
+    }
+
+    .reel-item:hover::after {
+      opacity: 0.5;
     }
 
     .reel-label {
@@ -1397,31 +1403,7 @@
     }
 
     .reel-lb-img-b {
-      position: absolute;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      object-fit: contain;
-      border-radius: 4px;
       display: none;
-      pointer-events: none;
-    }
-
-    .reel-lb-img-b.wave-in {
-      display: block;
-      animation: waveIn 0.88s var(--ease-out) forwards;
-    }
-
-    @keyframes waveIn {
-      0% {
-        clip-path: polygon(0 0, 0% 0%, 0% 25%, 0% 50%, 0% 75%, 0% 100%, 0 100%);
-      }
-      48% {
-        clip-path: polygon(0 0, 50% 0%, 65% 25%, 44% 50%, 65% 75%, 50% 100%, 0 100%);
-      }
-      100% {
-        clip-path: polygon(0 0, 100% 0%, 100% 25%, 100% 50%, 100% 75%, 100% 100%, 0 100%);
-      }
     }
 
     .reel-lb.open .reel-lb-img {
@@ -1897,7 +1879,7 @@
       .reserve-phone { font-size: 1.3rem; }
 
       #reel { height: 36vh; min-height: 220px; }
-      .reel-item { width: 72vw; }
+      .reel-item { width: 86vw; }
     }
 
     /* ─── SCROLL PROGRESS ─── */
@@ -2149,6 +2131,7 @@
       <figure class="reel-item"><picture><source srcset="assets/room-main-dining.webp" type="image/webp" /><img src="assets/room-main-dining.jpg" alt="Main dining room at night" loading="lazy" width="380" height="238" /></picture><figcaption class="reel-label">Main Hall</figcaption></figure>
       <figure class="reel-item"><picture><source srcset="assets/room-bar.webp" type="image/webp" /><img src="assets/room-bar.jpg" alt="Restaurant bar with amber lighting" loading="lazy" width="380" height="238" /></picture><figcaption class="reel-label">The Bar</figcaption></figure>
       <figure class="reel-item"><picture><source srcset="assets/room-private.webp" type="image/webp" /><img src="assets/room-private.jpg" alt="Private dining room setting" loading="lazy" width="380" height="238" /></picture><figcaption class="reel-label">Private</figcaption></figure>
+      <!-- clones for seamless loop -->
       <figure class="reel-item" aria-hidden="true"><picture><source srcset="assets/hero-dining.webp" type="image/webp" /><img src="assets/hero-dining.jpg" alt="" loading="lazy" width="380" height="238" /></picture><figcaption class="reel-label">The Plate</figcaption></figure>
       <figure class="reel-item" aria-hidden="true"><picture><source srcset="assets/story-interior.webp" type="image/webp" /><img src="assets/story-interior.jpg" alt="" loading="lazy" width="380" height="238" /></picture><figcaption class="reel-label">The Room</figcaption></figure>
       <figure class="reel-item" aria-hidden="true"><picture><source srcset="assets/room-main-dining.webp" type="image/webp" /><img src="assets/room-main-dining.jpg" alt="" loading="lazy" width="380" height="238" /></picture><figcaption class="reel-label">Main Hall</figcaption></figure>
@@ -2856,21 +2839,17 @@
       const nextIdx = (currentReelIdx + 1) % reelItems.length;
       const { src, alt, caption } = loadImg(reelItems[nextIdx]);
 
-      reelLbImgB.src = src;
-      reelLbImgB.alt = alt;
-      reelLbCaption.style.opacity = '0';
-      reelLbImgB.classList.add('wave-in');
+      reelLbImg.style.transition = 'opacity 0.3s var(--ease-out)';
+      reelLbImg.style.opacity = '0';
 
       setTimeout(() => {
         reelLbImg.src = src;
         reelLbImg.alt = alt;
         reelLbCaption.textContent = caption;
-        reelLbCaption.style.opacity = '';
-        reelLbImgB.classList.remove('wave-in');
-        reelLbImgB.src = '';
+        reelLbImg.style.opacity = '1';
         currentReelIdx = nextIdx;
         waving = false;
-      }, 920);
+      }, 300);
     }
 
     reelTrack.addEventListener('click', (e) => {
